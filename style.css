@@ -1,0 +1,409 @@
+:root {
+  --bg-color: #0f172a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --card-bg: rgba(30, 41, 59, 0.6);
+  --accent: #38bdf8;
+  --gradient: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.15), transparent 30%),
+    radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.15), transparent 30%);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+.app-container {
+  max-width: 1100px;
+  width: 100%;
+  padding: 60px 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 50px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 15px 0;
+}
+
+header p {
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  margin: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.table-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow-x: auto;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* Custom scrollbar for the table container */
+.table-card::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.table-card::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 10px;
+}
+.table-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2); 
+  border-radius: 10px;
+}
+.table-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3); 
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+tbody tr {
+  transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  vertical-align: top;
+}
+
+.vaccine-name {
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.controls-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+  margin-bottom: 40px;
+  animation: fadeInUp 0.5s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.input-row {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  justify-content: center;
+}
+
+.input-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.input-col label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+#patient-age, #last-schedule {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+#last-schedule option {
+  background: var(--bg-color);
+  color: white;
+}
+
+#patient-age:focus, #last-schedule:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+#generate-btn {
+  padding: 14px 30px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  background: var(--gradient);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+  margin-top: 10px;
+}
+
+#generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+}
+
+#generate-btn:active {
+  transform: translateY(1px);
+}
+
+/* Timeline specific styles */
+#timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.timeline-month {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.timeline-header {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px 25px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+}
+
+.timeline-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.timeline-header .age-badge {
+  background: var(--gradient);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-right: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timeline-doses {
+  padding: 20px 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.dose-item {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dose-vaccine {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.dose-num {
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+  background: var(--gradient);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 800px) {
+  .app-container {
+    padding: 30px 15px;
+  }
+  h1 {
+    font-size: 2.2rem;
+  }
+  .table-card {
+    padding: 15px;
+    border-radius: 12px;
+  }
+  th, td {
+    padding: 16px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+.controls-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+  margin-bottom: 30px;
+  animation: fadeInUp 0.5s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.controls-card label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.input-group {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+}
+
+#patient-age {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+#patient-age:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+#generate-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  background: var(--gradient);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+}
+
+#generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+}
+
+#generate-btn:active {
+  transform: translateY(1px);
+}
