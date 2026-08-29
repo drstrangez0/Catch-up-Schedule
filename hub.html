@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Saudi National Catch-up Vaccination Schedule Generator.">
-  <title>Catch-up Vaccination Schedule</title>
+  <meta name="description" content="Saudi Vaccine Hub - Comprehensive clinical guide to Saudi National Schedule and catch-up immunization rules.">
+  <title>Vaccine Hub | Saudi National Immunization & Catch-up Rules</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -15,11 +15,11 @@
     <header>
       <!-- Navigation Bar -->
       <nav class="main-nav">
-        <a href="index.html" class="nav-tab active">
+        <a href="index.html" class="nav-tab">
           <span class="nav-icon">⚡</span>
           <span>Catch-up Calculator</span>
         </a>
-        <a href="hub.html" class="nav-tab">
+        <a href="hub.html" class="nav-tab active">
           <span class="nav-icon">📚</span>
           <span>Vaccine Hub</span>
         </a>
@@ -29,126 +29,45 @@
         </button>
       </nav>
 
-      <h1>Catch-up Vaccination Schedule</h1>
-      <p>Saudi National Immunization Program & Catch-up Guidelines</p>
+      <h1>Saudi Vaccine Hub</h1>
+      <p>Comprehensive Clinical Guidelines: Routine Saudi Schedule, Minimum Ages, Dose Intervals & Catch-up Rules</p>
       <p class="author-tag">Done by Abduleleh Alharbi</p>
     </header>
 
     <main>
-      <div class="controls-card">
-        <div class="input-row">
-          <!-- Age Input with Unit Switcher (Months / Years) -->
-          <div class="input-col">
-            <div class="label-with-action">
-              <label for="patient-age">Patient Age:</label>
-              <div class="unit-toggle-group" id="unit-toggle-group">
-                <button type="button" class="unit-btn active" data-unit="months" id="unit-months-btn">Months</button>
-                <button type="button" class="unit-btn" data-unit="years" id="unit-years-btn">Years</button>
-              </div>
-            </div>
-            <input type="number" id="patient-age" min="0" step="any" placeholder="Enter age in months (e.g. 15)">
-            <input type="hidden" id="age-unit" value="months">
-          </div>
-
-          <!-- Last Vaccine Taken: Dependent on Age input -->
-          <div class="input-col" id="last-schedule-wrapper">
-            <div class="label-with-action">
-              <label for="last-schedule">Last Vaccine Taken:</label>
-              <button type="button" id="edit-custom-btn" class="mini-action-btn" style="display: none;">Edit Doses</button>
-            </div>
-            <select id="last-schedule" disabled title="Please enter patient age first">
-              <option value="" disabled selected>— Enter age first —</option>
-              <option value="None">None (0 Doses)</option>
-              <option value="Birth" data-min-m="0">Birth (HepB 1)</option>
-              <option value="2m" data-min-m="2">2 Months</option>
-              <option value="4m" data-min-m="4">4 Months</option>
-              <option value="6m" data-min-m="6">6 Months</option>
-              <option value="9m" data-min-m="9">9 Months</option>
-              <option value="12m" data-min-m="12">12 Months</option>
-              <option value="18m" data-min-m="18">18 Months</option>
-              <option value="24m" data-min-m="24">24 Months</option>
-              <option value="4y" data-min-m="48">4–6 Years</option>
-              <option value="11y" data-min-m="132">11 Years</option>
-              <option value="12y" data-min-m="144">12 Years</option>
-              <option value="18y" data-min-m="216">18 Years</option>
-              <option value="Custom">Custom (Select Doses...)</option>
-            </select>
-            <span class="field-hint" id="age-prompt-hint">⚠️ Please enter patient age above to select vaccines</span>
-          </div>
-
-          <!-- Assessment Date -->
-          <div class="input-col">
-            <label for="assessment-date">Assessment Date:</label>
-            <input type="date" id="assessment-date">
-          </div>
+      <!-- Search and Filter Bar -->
+      <div class="hub-controls-card">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="vaccine-search" placeholder="Search vaccine by name, acronym, or target disease (e.g. PCV, MMR, Polio)...">
         </div>
-        <button id="generate-btn">Generate Catch-up Schedule</button>
+        <div class="filter-chips" id="filter-chips">
+          <button type="button" class="filter-chip active" data-filter="all">All Vaccines (14)</button>
+          <button type="button" class="filter-chip" data-filter="infant">Infant (0–12m)</button>
+          <button type="button" class="filter-chip" data-filter="toddler">Toddler (1–2y)</button>
+          <button type="button" class="filter-chip" data-filter="child">Child (4–6y)</button>
+          <button type="button" class="filter-chip" data-filter="adolescent">Adolescent (11–18y)</button>
+        </div>
       </div>
 
-      <!-- Result Container with Single Table -->
-      <div class="result-wrapper" id="result-wrapper" style="display: none;">
-        <div class="summary-card" id="summary-card">
-          <!-- Populated by JS -->
+      <!-- Quick Summary Stats & Action -->
+      <div class="hub-toolbar">
+        <span class="hub-count-text" id="hub-count-text">Showing 14 vaccines</span>
+        <div class="toolbar-actions">
+          <button type="button" class="secondary-btn" id="expand-all-btn">Expand All</button>
+          <button type="button" class="secondary-btn" id="collapse-all-btn">Collapse All</button>
+          <button type="button" class="secondary-btn" id="print-hub-btn">Print Guide</button>
         </div>
+      </div>
 
-        <div class="table-card">
-          <div class="table-header-bar">
-            <h2>Catch-up Immunization Plan</h2>
-            <button id="print-btn" class="secondary-btn" title="Print Schedule">Print Schedule</button>
-          </div>
-          <div class="table-responsive">
-            <table id="catchup-table">
-              <thead>
-                <tr>
-                  <th class="col-age" style="width: 22%;">Age</th>
-                  <th class="col-date" style="width: 18%;">Scheduled Date</th>
-                  <th class="col-vaccine" style="width: 20%;">Vaccine</th>
-                  <th class="col-dose" style="width: 14%;">Dose</th>
-                  <th class="col-notes" style="width: 26%;">Interval & Clinical Notes</th>
-                </tr>
-              </thead>
-              <tbody id="catchup-tbody">
-                <!-- Rows dynamically rendered by JS -->
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <!-- Vaccine Cards Container -->
+      <div class="vaccine-hub-grid" id="vaccine-hub-grid">
+        <!-- Injected dynamically by hub.js -->
       </div>
     </main>
   </div>
 
-  <!-- Modal 1: Custom Vaccine Selection Popup -->
-  <div class="modal-backdrop" id="custom-modal" style="display: none;">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-header-titles">
-          <h2>Select Administered Vaccines</h2>
-          <p>Check all vaccine doses the patient has already received based on the Saudi National Schedule.</p>
-        </div>
-        <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Close modal">&times;</button>
-      </div>
-
-      <div class="modal-actions-bar">
-        <div class="actions-left">
-          <button type="button" class="action-link-btn" id="select-all-btn">Select All</button>
-          <span class="action-divider">•</span>
-          <button type="button" class="action-link-btn" id="clear-all-btn">Clear All</button>
-        </div>
-        <span class="selected-count-badge" id="selected-count-badge">0 doses selected</span>
-      </div>
-
-      <div class="modal-body" id="custom-schedule-grid">
-        <!-- Rendered dynamically by script.js -->
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="secondary-btn" id="modal-cancel-btn">Cancel</button>
-        <button type="button" class="primary-btn" id="modal-apply-btn">Apply Selection</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal 2: Official Saudi National Vaccine Schedule Reference -->
+  <!-- Saudi National Schedule Reference Modal -->
   <div class="modal-backdrop" id="schedule-modal" style="display: none;">
     <div class="modal-card modal-card-large">
       <div class="modal-header">
@@ -335,7 +254,7 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="hub.js"></script>
 </body>
 
 </html>
