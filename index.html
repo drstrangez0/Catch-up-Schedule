@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Saudi National Catch-up Vaccination Schedule Generator.">
+  <title>Catch-up Vaccination Schedule</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <header>
+      <!-- Navigation Bar -->
+      <nav class="main-nav">
+        <a href="index.html" class="nav-tab active">
+          <span class="nav-icon">⚡</span>
+          <span>Catch-up Calculator</span>
+        </a>
+        <a href="hub.html" class="nav-tab">
+          <span class="nav-icon">📚</span>
+          <span>Vaccine Hub</span>
+        </a>
+        <button type="button" id="view-schedule-btn" class="header-action-btn">
+          <span class="btn-icon">📋</span>
+          <span>Saudi Schedule Reference</span>
+        </button>
+      </nav>
+
+      <h1>Catch-up Vaccination Schedule</h1>
+      <p>Saudi National Immunization Program & Catch-up Guidelines</p>
+      <p class="author-tag">Done by Abduleleh Alharbi</p>
+    </header>
+
+    <main>
+      <div class="controls-card">
+        <div class="input-row">
+          <!-- Age Input with Unit Switcher (Months / Years) -->
+          <div class="input-col">
+            <div class="label-with-action">
+              <label for="patient-age">Patient Age:</label>
+              <div class="unit-toggle-group" id="unit-toggle-group">
+                <button type="button" class="unit-btn active" data-unit="months" id="unit-months-btn">Months</button>
+                <button type="button" class="unit-btn" data-unit="years" id="unit-years-btn">Years</button>
+              </div>
+            </div>
+            <input type="number" id="patient-age" min="0" step="any" placeholder="Enter age in months (e.g. 15)">
+            <input type="hidden" id="age-unit" value="months">
+          </div>
+
+          <!-- Last Vaccine Taken: Dependent on Age input -->
+          <div class="input-col" id="last-schedule-wrapper">
+            <div class="label-with-action">
+              <label for="last-schedule">Last Vaccine Taken:</label>
+              <button type="button" id="edit-custom-btn" class="mini-action-btn" style="display: none;">Edit Doses</button>
+            </div>
+            <select id="last-schedule" disabled title="Please enter patient age first">
+              <option value="" disabled selected>— Enter age first —</option>
+              <option value="None">None (0 Doses)</option>
+              <option value="Birth" data-min-m="0">Birth (HepB 1)</option>
+              <option value="2m" data-min-m="2">2 Months</option>
+              <option value="4m" data-min-m="4">4 Months</option>
+              <option value="6m" data-min-m="6">6 Months</option>
+              <option value="9m" data-min-m="9">9 Months</option>
+              <option value="12m" data-min-m="12">12 Months</option>
+              <option value="18m" data-min-m="18">18 Months</option>
+              <option value="24m" data-min-m="24">24 Months</option>
+              <option value="4y" data-min-m="48">4–6 Years</option>
+              <option value="11y" data-min-m="132">11 Years</option>
+              <option value="12y" data-min-m="144">12 Years</option>
+              <option value="18y" data-min-m="216">18 Years</option>
+              <option value="Custom">Custom (Select Doses...)</option>
+            </select>
+            <span class="field-hint" id="age-prompt-hint">⚠️ Please enter patient age above to select vaccines</span>
+          </div>
+
+          <!-- Assessment Date -->
+          <div class="input-col">
+            <label for="assessment-date">Assessment Date:</label>
+            <input type="date" id="assessment-date">
+          </div>
+        </div>
+        <button id="generate-btn">Generate Catch-up Schedule</button>
+      </div>
+
+      <!-- Result Container with Single Table -->
+      <div class="result-wrapper" id="result-wrapper" style="display: none;">
+        <div class="summary-card" id="summary-card">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="table-card">
+          <div class="table-header-bar">
+            <h2>Catch-up Immunization Plan</h2>
+            <button id="print-btn" class="secondary-btn" title="Print Schedule">Print Schedule</button>
+          </div>
+          <div class="table-responsive">
+            <table id="catchup-table">
+              <thead>
+                <tr>
+                  <th class="col-age" style="width: 22%;">Age</th>
+                  <th class="col-date" style="width: 18%;">Scheduled Date</th>
+                  <th class="col-vaccine" style="width: 20%;">Vaccine</th>
+                  <th class="col-dose" style="width: 14%;">Dose</th>
+                  <th class="col-notes" style="width: 26%;">Interval & Clinical Notes</th>
+                </tr>
+              </thead>
+              <tbody id="catchup-tbody">
+                <!-- Rows dynamically rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal 1: Custom Vaccine Selection Popup -->
+  <div class="modal-backdrop" id="custom-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-header-titles">
+          <h2>Select Administered Vaccines</h2>
+          <p>Check all vaccine doses the patient has already received based on the Saudi National Schedule.</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-actions-bar">
+        <div class="actions-left">
+          <button type="button" class="action-link-btn" id="select-all-btn">Select All</button>
+          <span class="action-divider">•</span>
+          <button type="button" class="action-link-btn" id="clear-all-btn">Clear All</button>
+        </div>
+        <span class="selected-count-badge" id="selected-count-badge">0 doses selected</span>
+      </div>
+
+      <div class="modal-body" id="custom-schedule-grid">
+        <!-- Rendered dynamically by script.js -->
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="secondary-btn" id="modal-cancel-btn">Cancel</button>
+        <button type="button" class="primary-btn" id="modal-apply-btn">Apply Selection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Official Saudi National Vaccine Schedule Reference -->
+  <div class="modal-backdrop" id="schedule-modal" style="display: none;">
+    <div class="modal-card modal-card-large">
+      <div class="modal-header">
+        <div class="modal-header-titles">
+          <h2>Saudi National Immunization Schedule</h2>
+          <p>Official routine immunization schedule approved by the Saudi Ministry of Health (MOH).</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="schedule-modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body schedule-modal-body">
+        <div class="schedule-table-wrap">
+          <table class="national-schedule-table">
+            <thead>
+              <tr>
+                <th style="width: 22%;">Milestone Age</th>
+                <th style="width: 50%;">Vaccines & Doses</th>
+                <th style="width: 28%;">Target Diseases / Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>🟢 Birth</strong></td>
+                <td><span class="vax-chip">HepB (Dose 1)</span></td>
+                <td>Hepatitis B (Within 24 hours of birth)</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 2 Months</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">HepB (Dose 2)</span>
+                    <span class="vax-chip">RV (Dose 1)</span>
+                    <span class="vax-chip">DTaP (Dose 1)</span>
+                    <span class="vax-chip">Hib (Dose 1)</span>
+                    <span class="vax-chip">PCV (Dose 1)</span>
+                    <span class="vax-chip">IPV (Dose 1)</span>
+                  </div>
+                </td>
+                <td>Hexavalent (DTaP-Hib-HepB-IPV) + RV + PCV</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 4 Months</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">HepB (Dose 3)</span>
+                    <span class="vax-chip">RV (Dose 2)</span>
+                    <span class="vax-chip">DTaP (Dose 2)</span>
+                    <span class="vax-chip">Hib (Dose 2)</span>
+                    <span class="vax-chip">PCV (Dose 2)</span>
+                    <span class="vax-chip">IPV (Dose 2)</span>
+                  </div>
+                </td>
+                <td>Hexavalent (DTaP-Hib-HepB-IPV) + RV + PCV</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 6 Months</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">BCG (Dose 1)</span>
+                    <span class="vax-chip">HepB (Dose 4)</span>
+                    <span class="vax-chip">RV (Dose 3)</span>
+                    <span class="vax-chip">DTaP (Dose 3)</span>
+                    <span class="vax-chip">Hib (Dose 3)</span>
+                    <span class="vax-chip">PCV (Dose 3)</span>
+                    <span class="vax-chip">IPV (Dose 3)</span>
+                    <span class="vax-chip">OPV (Dose 1)</span>
+                  </div>
+                </td>
+                <td>BCG (TB) / Hexavalent (DTaP-Hib-HepB-IPV) / RV final / OPV</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 9 Months</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">Measles (Dose 1)</span>
+                    <span class="vax-chip">MCV4 (Dose 1)</span>
+                  </div>
+                </td>
+                <td>Monovalent Measles / MenACWY (MCV4 Dose 1)</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 12 Months</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">PCV (Dose 4)</span>
+                    <span class="vax-chip">OPV (Dose 2)</span>
+                    <span class="vax-chip">MCV4 (Dose 2)</span>
+                    <span class="vax-chip">MMR (Dose 1)</span>
+                  </div>
+                </td>
+                <td>PCV Booster / OPV / MenACWY Dose 2 / MMR Dose 1</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 18 Months</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">DTaP (Dose 4)</span>
+                    <span class="vax-chip">Hib (Dose 4)</span>
+                    <span class="vax-chip">OPV (Dose 3)</span>
+                    <span class="vax-chip">HepA (Dose 1)</span>
+                    <span class="vax-chip">Varicella (Dose 1)</span>
+                    <span class="vax-chip">MMR (Dose 2)</span>
+                  </div>
+                </td>
+                <td>DTaP Booster 1 / Hib Booster / OPV / HepA / Varicella / MMR</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 24 Months</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">HepA (Dose 2)</span>
+                  </div>
+                </td>
+                <td>Hepatitis A (Dose 2 - completion)</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 4–6 Years</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">DTaP (Dose 5)</span>
+                    <span class="vax-chip">OPV (Dose 4)</span>
+                    <span class="vax-chip">Varicella (Dose 2)</span>
+                    <span class="vax-chip">MMR (Dose 3)</span>
+                  </div>
+                </td>
+                <td>School Entry: DTaP Booster 2 / OPV / Varicella / MMR</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 11 Years</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">Tdap (Dose 1)</span>
+                    <span class="vax-chip">HPV (Dose 1)</span>
+                  </div>
+                </td>
+                <td>Adolescent Tdap booster / HPV Dose 1</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 12 Years</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">HPV (Dose 2)</span>
+                  </div>
+                </td>
+                <td>Human Papillomavirus Dose 2 (series completion)</td>
+              </tr>
+              <tr>
+                <td><strong>🟢 18 Years</strong></td>
+                <td>
+                  <div class="vax-chips-list">
+                    <span class="vax-chip">MCV4 (Dose 3)</span>
+                  </div>
+                </td>
+                <td>Meningococcal Quadrivalent (MCV4) Adult Booster</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="legend-card">
+          <h3>Vaccine Abbreviations & Definitions</h3>
+          <div class="legend-grid">
+            <div class="legend-item"><strong>HepB:</strong> Hepatitis B</div>
+            <div class="legend-item"><strong>RV:</strong> Rotavirus</div>
+            <div class="legend-item"><strong>DTaP:</strong> Diphtheria, Tetanus, acellular Pertussis</div>
+            <div class="legend-item"><strong>Hib:</strong> Haemophilus influenzae type b</div>
+            <div class="legend-item"><strong>PCV:</strong> Pneumococcal Conjugate Vaccine</div>
+            <div class="legend-item"><strong>IPV:</strong> Inactivated Polio Vaccine</div>
+            <div class="legend-item"><strong>OPV:</strong> Oral Polio Vaccine</div>
+            <div class="legend-item"><strong>BCG:</strong> Bacille Calmette-Guérin (Tuberculosis)</div>
+            <div class="legend-item"><strong>MCV4:</strong> Meningococcal Conjugate (MenACWY)</div>
+            <div class="legend-item"><strong>MMR:</strong> Measles, Mumps, Rubella</div>
+            <div class="legend-item"><strong>HepA:</strong> Hepatitis A</div>
+            <div class="legend-item"><strong>Varicella:</strong> Chickenpox</div>
+            <div class="legend-item"><strong>Tdap:</strong> Tetanus, Diphtheria, acellular Pertussis (Adolescent Booster)</div>
+            <div class="legend-item"><strong>HPV:</strong> Human Papillomavirus</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="secondary-btn" id="schedule-modal-cancel-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
